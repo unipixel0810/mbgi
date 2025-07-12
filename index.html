@@ -181,6 +181,54 @@
             box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
         }
 
+        .share-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .share-btn {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            padding: 12px 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .kakao-share {
+            background: #FEE500;
+            border-color: #FEE500;
+            color: #3C1E1E;
+        }
+
+        .kakao-share:hover {
+            background: #FFD700;
+            border-color: #FFD700;
+        }
+
+        .copy-link {
+            background: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+
+        .copy-link:hover {
+            background: #5a6fd8;
+            border-color: #5a6fd8;
+        }
+
         .start-btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -277,6 +325,14 @@
                         <h3>단점</h3>
                         <ul class="trait-list" id="weaknesses"></ul>
                     </div>
+                </div>
+                <div class="share-buttons">
+                    <button class="share-btn kakao-share" onclick="shareToKakao()">
+                        📱 카카오톡 공유
+                    </button>
+                    <button class="share-btn copy-link" onclick="copyLink()">
+                        🔗 링크 복사
+                    </button>
                 </div>
                 <button class="restart-btn" onclick="restartTest()">다시 테스트하기</button>
             </div>
@@ -791,6 +847,65 @@
             
             document.getElementById('result-screen').classList.remove('active');
             document.getElementById('start-screen').style.display = 'block';
+        }
+
+        // 카카오톡 공유 함수
+        function shareToKakao() {
+            const mbtiType = document.getElementById('mbti-type').textContent;
+            const mbtiTitle = document.getElementById('mbti-title').textContent;
+            const currentUrl = window.location.href;
+            
+            const shareText = `🎯 MBTI 테스트 결과\n\n${mbtiType} - ${mbtiTitle}\n\n나의 MBTI 성격 유형을 확인해보세요!\n\n${currentUrl}`;
+            
+            if (navigator.share) {
+                // Web Share API 지원하는 경우
+                navigator.share({
+                    title: 'MBTI 성격 유형 테스트',
+                    text: shareText,
+                    url: currentUrl
+                });
+            } else {
+                // 카카오톡 공유 URL 생성
+                const kakaoUrl = `https://story.kakao.com/share?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent(shareText)}`;
+                window.open(kakaoUrl, '_blank');
+            }
+        }
+
+        // 링크 복사 함수
+        function copyLink() {
+            const currentUrl = window.location.href;
+            
+            if (navigator.clipboard) {
+                // Clipboard API 지원하는 경우
+                navigator.clipboard.writeText(currentUrl).then(() => {
+                    showCopyMessage();
+                });
+            } else {
+                // 구형 브라우저 지원
+                const textArea = document.createElement('textarea');
+                textArea.value = currentUrl;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showCopyMessage();
+            }
+        }
+
+        // 복사 완료 메시지 표시
+        function showCopyMessage() {
+            const copyBtn = document.querySelector('.copy-link');
+            const originalText = copyBtn.innerHTML;
+            
+            copyBtn.innerHTML = '✅ 복사 완료!';
+            copyBtn.style.background = '#28a745';
+            copyBtn.style.borderColor = '#28a745';
+            
+            setTimeout(() => {
+                copyBtn.innerHTML = originalText;
+                copyBtn.style.background = '#667eea';
+                copyBtn.style.borderColor = '#667eea';
+            }, 2000);
         }
     </script>
 </body>
