@@ -763,6 +763,17 @@
         let currentQuestion = 0;
         let scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
 
+        // 페이지 로드 시 URL 파라미터 확인
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const result = urlParams.get('result');
+            
+            if (result && mbtiTypes[result]) {
+                // 결과가 URL에 있으면 바로 결과 화면 표시
+                showSharedResult(result);
+            }
+        };
+
         function startTest() {
             document.getElementById('start-screen').style.display = 'none';
             document.getElementById('question-screen').classList.add('active');
@@ -805,8 +816,14 @@
 
         function showResult() {
             const mbtiType = getMBTIType();
+            showSharedResult(mbtiType);
+        }
+
+        function showSharedResult(mbtiType) {
             const mbtiInfo = mbtiTypes[mbtiType];
             
+            // 시작 화면과 질문 화면 숨기기
+            document.getElementById('start-screen').style.display = 'none';
             document.getElementById('question-screen').classList.remove('active');
             document.getElementById('result-screen').classList.add('active');
             
@@ -853,37 +870,42 @@
         function shareToKakao() {
             const mbtiType = document.getElementById('mbti-type').textContent;
             const mbtiTitle = document.getElementById('mbti-title').textContent;
-            const currentUrl = window.location.href;
             
-            const shareText = `🎯 MBTI 테스트 결과\n\n${mbtiType} - ${mbtiTitle}\n\n나의 MBTI 성격 유형을 확인해보세요!\n\n${currentUrl}`;
+            // 결과가 포함된 URL 생성
+            const resultUrl = window.location.origin + window.location.pathname + '?result=' + mbtiType;
+            
+            const shareText = `🎯 MBTI 테스트 결과\n\n${mbtiType} - ${mbtiTitle}\n\n나의 MBTI 성격 유형을 확인해보세요!\n\n${resultUrl}`;
             
             if (navigator.share) {
                 // Web Share API 지원하는 경우
                 navigator.share({
                     title: 'MBTI 성격 유형 테스트',
                     text: shareText,
-                    url: currentUrl
+                    url: resultUrl
                 });
             } else {
                 // 카카오톡 공유 URL 생성
-                const kakaoUrl = `https://story.kakao.com/share?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent(shareText)}`;
+                const kakaoUrl = `https://story.kakao.com/share?url=${encodeURIComponent(resultUrl)}&text=${encodeURIComponent(shareText)}`;
                 window.open(kakaoUrl, '_blank');
             }
         }
 
         // 링크 복사 함수
         function copyLink() {
-            const currentUrl = window.location.href;
+            const mbtiType = document.getElementById('mbti-type').textContent;
+            
+            // 결과가 포함된 URL 생성
+            const resultUrl = window.location.origin + window.location.pathname + '?result=' + mbtiType;
             
             if (navigator.clipboard) {
                 // Clipboard API 지원하는 경우
-                navigator.clipboard.writeText(currentUrl).then(() => {
+                navigator.clipboard.writeText(resultUrl).then(() => {
                     showCopyMessage();
                 });
             } else {
                 // 구형 브라우저 지원
                 const textArea = document.createElement('textarea');
-                textArea.value = currentUrl;
+                textArea.value = resultUrl;
                 document.body.appendChild(textArea);
                 textArea.select();
                 document.execCommand('copy');
