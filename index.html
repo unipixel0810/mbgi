@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBTI 성격 유형 테스트</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .question-container {
+            display: none;
+        }
+
+        .question-container.active {
+            display: block;
+        }
+
+        .question {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            color: #333;
+            text-align: center;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .option:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .result-container {
+            display: none;
+            text-align: center;
+        }
+
+        .result-container.active {
+            display: block;
+        }
+
+        .mbti-type {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .mbti-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .traits {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .trait-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+        }
+
+        .trait-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .trait-list {
+            list-style: none;
+        }
+
+        .trait-list li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .trait-list li:before {
+            content: "•";
+            color: #667eea;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 30px;
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .intro {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .intro h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .intro p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .content {
+                padding: 30px 20px;
+            }
+            
+            .traits {
+                grid-template-columns: 1fr;
+            }
+            
+            .mbti-type {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>MBTI 성격 유형 테스트</h1>
+            <p>당신의 성격 유형을 알아보세요</p>
+        </div>
+        
+        <div class="content">
+            <!-- 시작 화면 -->
+            <div id="start-screen">
+                <div class="intro">
+                    <h2>MBTI 성격 유형 테스트</h2>
+                    <p>이 테스트는 16가지 MBTI 성격 유형 중 당신의 유형을 찾아드립니다.<br>
+                    총 20개의 질문에 답하시면 됩니다. 솔직하게 답변해주세요!</p>
+                </div>
+                <button class="start-btn" onclick="startTest()">테스트 시작하기</button>
+            </div>
+
+            <!-- 질문 화면 -->
+            <div id="question-screen" class="question-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div class="question" id="question-text"></div>
+                <div class="options" id="options"></div>
+            </div>
+
+            <!-- 결과 화면 -->
+            <div id="result-screen" class="result-container">
+                <div class="mbti-type" id="mbti-type"></div>
+                <div class="mbti-title" id="mbti-title"></div>
+                <div class="traits">
+                    <div class="trait-section">
+                        <h3>장점</h3>
+                        <ul class="trait-list" id="strengths"></ul>
+                    </div>
+                    <div class="trait-section">
+                        <h3>단점</h3>
+                        <ul class="trait-list" id="weaknesses"></ul>
+                    </div>
+                </div>
+                <button class="restart-btn" onclick="restartTest()">다시 테스트하기</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // MBTI 질문들
+        const questions = [
+            {
+                question: "새로운 사람들과 만나는 것을 어떻게 생각하시나요?",
+                options: [
+                    { text: "에너지를 얻는다", type: "E" },
+                    { text: "에너지를 소모한다", type: "I" }
+                ]
+            },
+            {
+                question: "파티나 모임에서 당신은?",
+                options: [
+                    { text: "많은 사람들과 대화한다", type: "E" },
+                    { text: "소수의 사람들과 깊이 있는 대화를 한다", type: "I" }
+                ]
+            },
+            {
+                question: "일을 할 때 당신은?",
+                options: [
+                    { text: "구체적이고 실용적인 방법을 선호한다", type: "S" },
+                    { text: "새롭고 창의적인 방법을 선호한다", type: "N" }
+                ]
+            },
+            {
+                question: "정보를 받을 때 당신은?",
+                options: [
+                    { text: "사실과 세부사항에 집중한다", type: "S" },
+                    { text: "큰 그림과 가능성에 집중한다", type: "N" }
+                ]
+            },
+            {
+                question: "의사결정을 할 때 당신은?",
+                options: [
+                    { text: "논리와 객관적 분석을 중시한다", type: "T" },
+                    { text: "감정과 가치를 중시한다", type: "F" }
+                ]
+            },
+            {
+                question: "갈등 상황에서 당신은?",
+                options: [
+                    { text: "공정성과 논리를 우선한다", type: "T" },
+                    { text: "조화와 관계를 우선한다", type: "F" }
+                ]
+            },
+            {
+                question: "일정과 계획에 대해 당신은?",
+                options: [
+                    { text: "체계적이고 계획적으로 생활한다", type: "J" },
+                    { text: "유연하고 즉흥적으로 생활한다", type: "P" }
+                ]
+            },
+            {
+                question: "마감일이 다가오면 당신은?",
+                options: [
+                    { text: "미리 준비하고 여유를 가진다", type: "J" },
+                    { text: "마감일에 가까워서 집중한다", type: "P" }
+                ]
+            },
+            {
+                question: "스트레스를 받을 때 당신은?",
+                options: [
+                    { text: "혼자만의 시간을 가진다", type: "I" },
+                    { text: "다른 사람과 함께 시간을 보낸다", type: "E" }
+                ]
+            },
+            {
+                question: "새로운 기술을 배울 때 당신은?",
+                options: [
+                    { text: "단계별로 체계적으로 배운다", type: "S" },
+                    { text: "직관적으로 전체적인 맥락을 파악한다", type: "N" }
+                ]
+            },
+            {
+                question: "팀 프로젝트에서 당신은?",
+                options: [
+                    { text: "효율성과 결과를 중시한다", type: "T" },
+                    { text: "팀원들의 감정과 협력을 중시한다", type: "F" }
+                ]
+            },
+            {
+                question: "변화에 대해 당신은?",
+                options: [
+                    { text: "안정적이고 예측 가능한 것을 선호한다", type: "J" },
+                    { text: "새롭고 다양한 경험을 선호한다", type: "P" }
+                ]
+            },
+            {
+                question: "문제 해결 시 당신은?",
+                options: [
+                    { text: "기존의 검증된 방법을 사용한다", type: "S" },
+                    { text: "새로운 접근 방법을 시도한다", type: "N" }
+                ]
+            },
+            {
+                question: "비판을 받았을 때 당신은?",
+                options: [
+                    { text: "객관적으로 분석하고 개선점을 찾는다", type: "T" },
+                    { text: "감정적으로 상처받고 개인적으로 받아들인다", type: "F" }
+                ]
+            },
+            {
+                question: "여행 계획을 세울 때 당신은?",
+                options: [
+                    { text: "상세한 일정과 예약을 미리 한다", type: "J" },
+                    { text: "대략적인 계획만 세우고 유연하게 대응한다", type: "P" }
+                ]
+            },
+            {
+                question: "일상생활에서 당신은?",
+                options: [
+                    { text: "규칙적이고 정돈된 환경을 선호한다", type: "J" },
+                    { text: "자유롭고 융통성 있는 환경을 선호한다", type: "P" }
+                ]
+            },
+            {
+                question: "의사소통할 때 당신은?",
+                options: [
+                    { text: "직접적이고 명확하게 표현한다", type: "T" },
+                    { text: "상대방의 감정을 고려하여 표현한다", type: "F" }
+                ]
+            },
+            {
+                question: "미래에 대해 생각할 때 당신은?",
+                options: [
+                    { text: "현실적이고 구체적인 계획을 세운다", type: "S" },
+                    { text: "이상적이고 큰 비전을 그린다", type: "N" }
+                ]
+            },
+            {
+                question: "감정 표현에 대해 당신은?",
+                options: [
+                    { text: "이성적이고 객관적으로 판단한다", type: "T" },
+                    { text: "공감적이고 따뜻하게 대응한다", type: "F" }
+                ]
+            },
+            {
+                question: "새로운 환경에 적응할 때 당신은?",
+                options: [
+                    { text: "천천히 관찰하고 신중하게 접근한다", type: "I" },
+                    { text: "적극적으로 탐험하고 빠르게 적응한다", type: "E" }
+                ]
+            }
+        ];
+
+        // MBTI 유형별 정보
+        const mbtiTypes = {
+            "ISTJ": {
+                title: "청렴결백한 논리주의자",
+                strengths: [
+                    "책임감이 강하고 신뢰할 수 있음",
+                    "체계적이고 조직적인 능력",
+                    "실용적이고 현실적인 접근",
+                    "일을 완성하는 데 탁월함",
+                    "전통과 규칙을 중시함"
+                ],
+                weaknesses: [
+                    "유연성이 부족할 수 있음",
+                    "감정 표현이 서툴 수 있음",
+                    "변화를 싫어하는 경향",
+                    "완벽주의적 성향",
+                    "타인의 감정을 고려하지 못할 수 있음"
+                ]
+            },
+            "ISFJ": {
+                title: "용감한 수호자",
+                strengths: [
+                    "타인을 돌보는 데 뛰어남",
+                    "충성스럽고 헌신적",
+                    "실용적이고 현실적",
+                    "세심하고 꼼꼼함",
+                    "안정적이고 신뢰할 수 있음"
+                ],
+                weaknesses: [
+                    "자신의 필요를 소홀히 할 수 있음",
+                    "변화에 저항하는 경향",
+                    "갈등을 피하려는 성향",
+                    "자신의 감정을 표현하기 어려움",
+                    "과도한 완벽주의"
+                ]
+            },
+            "INFJ": {
+                title: "통찰력 있는 선지자",
+                strengths: [
+                    "직관적이고 통찰력이 뛰어남",
+                    "타인의 감정을 잘 이해함",
+                    "창의적이고 이상주의적",
+                    "깊이 있는 사고",
+                    "타인을 돕는 데 헌신적"
+                ],
+                weaknesses: [
+                    "완벽주의적 성향",
+                    "갈등을 피하려는 경향",
+                    "자신의 감정을 표현하기 어려움",
+                    "비판에 민감함",
+                    "현실과 이상의 괴리로 인한 스트레스"
+                ]
+            },
+            "INTJ": {
+                title: "전략적인 설계자",
+                strengths: [
+                    "전략적 사고와 계획 능력",
+                    "논리적이고 분석적",
+                    "독립적이고 자율적",
+                    "지적 호기심이 강함",
+                    "장기적 비전을 가짐"
+                ],
+                weaknesses: [
+                    "타인의 감정을 고려하지 못할 수 있음",
+                    "완벽주의적 성향",
+                    "고집스러운 면",
+                    "감정 표현이 서툴 수 있음",
+                    "타인과의 협력이 어려울 수 있음"
+                ]
+            },
+            "ISTP": {
+                title: "만능 재주꾼",
+                strengths: [
+                    "실용적이고 현실적",
+                    "문제 해결 능력이 뛰어남",
+                    "유연하고 적응력이 좋음",
+                    "위기 상황에서 침착함",
+                    "기술적 능력이 뛰어남"
+                ],
+                weaknesses: [
+                    "장기 계획 수립이 어려움",
+                    "규칙과 구조를 싫어함",
+                    "감정 표현이 서툴 수 있음",
+                    "타인과의 깊은 관계 형성이 어려움",
+                    "일상적인 업무에 지루해함"
+                ]
+            },
+            "ISFP": {
+                title: "모험을 즐기는 예술가",
+                strengths: [
+                    "예술적 감각이 뛰어남",
+                    "타인을 배려하고 따뜻함",
+                    "현실적이고 실용적",
+                    "자연과 조화를 중시함",
+                    "현재를 즐기는 능력"
+                ],
+                weaknesses: [
+                    "장기 계획 수립이 어려움",
+                    "갈등을 피하려는 경향",
+                    "자신의 감정을 표현하기 어려움",
+                    "변화에 저항하는 경향",
+                    "타인의 기대에 부응하려는 압박감"
+                ]
+            },
+            "INFP": {
+                title: "열정적인 중재자",
+                strengths: [
+                    "창의적이고 상상력이 풍부함",
+                    "타인의 감정을 잘 이해함",
+                    "이상주의적이고 가치 지향적",
+                    "깊이 있는 사고",
+                    "타인을 돕는 데 헌신적"
+                ],
+                weaknesses: [
+                    "현실적이지 않을 수 있음",
+                    "갈등을 피하려는 경향",
+                    "자신의 감정을 표현하기 어려움",
+                    "완벽주의적 성향",
+                    "타인의 기대에 부응하려는 압박감"
+                ]
+            },
+            "INTP": {
+                title: "논리적인 사색가",
+                strengths: [
+                    "논리적이고 분석적 사고",
+                    "지적 호기심이 강함",
+                    "독창적이고 창의적",
+                    "객관적이고 공정함",
+                    "복잡한 문제 해결 능력"
+                ],
+                weaknesses: [
+                    "감정 표현이 서툴 수 있음",
+                    "일상적인 업무에 지루해함",
+                    "타인과의 감정적 교류가 어려움",
+                    "완벽주의적 성향",
+                    "실행력이 부족할 수 있음"
+                ]
+            },
+            "ESTP": {
+                title: "모험을 즐기는 사업가",
+                strengths: [
+                    "실용적이고 현실적",
+                    "위기 상황에서 침착함",
+                    "유연하고 적응력이 좋음",
+                    "행동 지향적",
+                    "사람들과 잘 어울림"
+                ],
+                weaknesses: [
+                    "장기 계획 수립이 어려움",
+                    "규칙과 구조를 싫어함",
+                    "감정적 깊이가 부족할 수 있음",
+                    "일상적인 업무에 지루해함",
+                    "타인의 감정을 고려하지 못할 수 있음"
+                ]
+            },
+            "ESFP": {
+                title: "자유로운 영혼의 연예인",
+                strengths: [
+                    "사교적이고 친근함",
+                    "현재를 즐기는 능력",
+                    "타인을 돕는 데 적극적",
+                    "실용적이고 현실적",
+                    "긍정적이고 낙관적"
+                ],
+                weaknesses: [
+                    "장기 계획 수립이 어려움",
+                    "규칙과 구조를 싫어함",
+                    "감정적 깊이가 부족할 수 있음",
+                    "일상적인 업무에 지루해함",
+                    "타인의 기대에 부응하려는 압박감"
+                ]
+            },
+            "ENFP": {
+                title: "재기발랄한 활동가",
+                strengths: [
+                    "창의적이고 상상력이 풍부함",
+                    "사교적이고 친근함",
+                    "타인의 감정을 잘 이해함",
+                    "열정적이고 에너지 넘침",
+                    "새로운 가능성을 발견하는 능력"
+                ],
+                weaknesses: [
+                    "일상적인 업무에 지루해함",
+                    "감정적 깊이가 부족할 수 있음",
+                    "장기 계획 수립이 어려움",
+                    "완벽주의적 성향",
+                    "타인의 기대에 부응하려는 압박감"
+                ]
+            },
+            "ENTP": {
+                title: "논쟁을 즐기는 변론가",
+                strengths: [
+                    "창의적이고 독창적",
+                    "논리적이고 분석적",
+                    "사교적이고 친근함",
+                    "새로운 아이디어를 잘 떠올림",
+                    "적응력이 좋고 유연함"
+                ],
+                weaknesses: [
+                    "일상적인 업무에 지루해함",
+                    "감정적 깊이가 부족할 수 있음",
+                    "타인의 감정을 고려하지 못할 수 있음",
+                    "완벽주의적 성향",
+                    "타인과의 감정적 교류가 어려움"
+                ]
+            },
+            "ESTJ": {
+                title: "엄격한 관리자",
+                strengths: [
+                    "조직적이고 체계적",
+                    "책임감이 강하고 신뢰할 수 있음",
+                    "실용적이고 현실적",
+                    "일을 완성하는 데 탁월함",
+                    "전통과 규칙을 중시함"
+                ],
+                weaknesses: [
+                    "유연성이 부족할 수 있음",
+                    "감정 표현이 서툴 수 있음",
+                    "변화를 싫어하는 경향",
+                    "완벽주의적 성향",
+                    "타인의 감정을 고려하지 못할 수 있음"
+                ]
+            },
+            "ESFJ": {
+                title: "사교적인 외교관",
+                strengths: [
+                    "사교적이고 친근함",
+                    "타인을 돌보는 데 뛰어남",
+                    "조직적이고 체계적",
+                    "충성스럽고 헌신적",
+                    "실용적이고 현실적"
+                ],
+                weaknesses: [
+                    "갈등을 피하려는 경향",
+                    "타인의 인정에 의존적",
+                    "변화에 저항하는 경향",
+                    "자신의 필요를 소홀히 할 수 있음",
+                    "과도한 완벽주의"
+                ]
+            },
+            "ENFJ": {
+                title: "정의로운 사회운동가",
+                strengths: [
+                    "타인을 이끄는 리더십",
+                    "타인의 감정을 잘 이해함",
+                    "사교적이고 친근함",
+                    "이상주의적이고 가치 지향적",
+                    "타인을 돕는 데 헌신적"
+                ],
+                weaknesses: [
+                    "타인의 인정에 의존적",
+                    "갈등을 피하려는 경향",
+                    "자신의 필요를 소홀히 할 수 있음",
+                    "완벽주의적 성향",
+                    "타인의 기대에 부응하려는 압박감"
+                ]
+            },
+            "ENTJ": {
+                title: "대담한 통솔자",
+                strengths: [
+                    "강력한 리더십",
+                    "전략적 사고와 계획 능력",
+                    "논리적이고 분석적",
+                    "결단력이 있고 자신감 있음",
+                    "효율적이고 조직적"
+                ],
+                weaknesses: [
+                    "타인의 감정을 고려하지 못할 수 있음",
+                    "고집스러운 면",
+                    "감정 표현이 서툴 수 있음",
+                    "완벽주의적 성향",
+                    "타인과의 협력이 어려울 수 있음"
+                ]
+            }
+        };
+
+        let currentQuestion = 0;
+        let scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+
+        function startTest() {
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('question-screen').classList.add('active');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const question = questions[currentQuestion];
+            document.getElementById('question-text').textContent = question.question;
+            
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const button = document.createElement('div');
+                button.className = 'option';
+                button.textContent = option.text;
+                button.onclick = () => selectOption(option.type);
+                optionsContainer.appendChild(button);
+            });
+            
+            updateProgress();
+        }
+
+        function selectOption(type) {
+            scores[type]++;
+            currentQuestion++;
+            
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function updateProgress() {
+            const progress = (currentQuestion / questions.length) * 100;
+            document.getElementById('progress-fill').style.width = progress + '%';
+        }
+
+        function showResult() {
+            const mbtiType = getMBTIType();
+            const mbtiInfo = mbtiTypes[mbtiType];
+            
+            document.getElementById('question-screen').classList.remove('active');
+            document.getElementById('result-screen').classList.add('active');
+            
+            document.getElementById('mbti-type').textContent = mbtiType;
+            document.getElementById('mbti-title').textContent = mbtiInfo.title;
+            
+            const strengthsList = document.getElementById('strengths');
+            const weaknessesList = document.getElementById('weaknesses');
+            
+            strengthsList.innerHTML = '';
+            weaknessesList.innerHTML = '';
+            
+            mbtiInfo.strengths.forEach(strength => {
+                const li = document.createElement('li');
+                li.textContent = strength;
+                strengthsList.appendChild(li);
+            });
+            
+            mbtiInfo.weaknesses.forEach(weakness => {
+                const li = document.createElement('li');
+                li.textContent = weakness;
+                weaknessesList.appendChild(li);
+            });
+        }
+
+        function getMBTIType() {
+            const E_I = scores.E > scores.I ? 'E' : 'I';
+            const S_N = scores.S > scores.N ? 'S' : 'N';
+            const T_F = scores.T > scores.F ? 'T' : 'F';
+            const J_P = scores.J > scores.P ? 'J' : 'P';
+            
+            return E_I + S_N + T_F + J_P;
+        }
+
+        function restartTest() {
+            currentQuestion = 0;
+            scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+            
+            document.getElementById('result-screen').classList.remove('active');
+            document.getElementById('start-screen').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
