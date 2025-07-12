@@ -2,6 +2,12 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <script>
+      // 폴더로 접근 시 자동으로 index.html로 리다이렉트
+      if ((location.pathname === '/' || location.pathname === '/mbgi/' || location.pathname === '/mbgi') && !location.pathname.endsWith('index.html')) {
+        location.replace((location.pathname.endsWith('/') ? location.pathname : location.pathname + '/') + 'index.html' + location.search);
+      }
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MBTI 성격 유형 테스트</title>
     <style>
