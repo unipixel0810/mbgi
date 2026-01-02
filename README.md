@@ -1,4 +1,4 @@
-# mbgi
+# mbti
 
 ## Troubleshooting GitHub Pages
 
